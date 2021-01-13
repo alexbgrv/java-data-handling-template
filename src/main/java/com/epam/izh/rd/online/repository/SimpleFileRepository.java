@@ -1,5 +1,10 @@
 package com.epam.izh.rd.online.repository;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.nio.file.Files;
+
 public class SimpleFileRepository implements FileRepository {
 
     /**
@@ -10,7 +15,16 @@ public class SimpleFileRepository implements FileRepository {
      */
     @Override
     public long countFilesInDirectory(String path) {
-        return 0;
+        File count = new File("src/main/resources/" + path);
+        int countOfFiles = 0;
+        if (count.isDirectory()) {
+            for (File file : count.listFiles()) {
+                countOfFiles += countFilesInDirectory(path + "/" + file.getName());
+            }
+        } else {
+            countOfFiles++;
+        }
+        return countOfFiles;
     }
 
     /**
@@ -21,7 +35,15 @@ public class SimpleFileRepository implements FileRepository {
      */
     @Override
     public long countDirsInDirectory(String path) {
-        return 0;
+        File count = new File("src/main/resources/" + path);
+        int countOfFiles = 0;
+        if (count.isDirectory()) {
+            for (File file : count.listFiles()) {
+                countOfFiles += countDirsInDirectory(path + "/" + file.getName());
+            }
+            countOfFiles++;
+        }
+        return countOfFiles;
     }
 
     /**
@@ -32,7 +54,17 @@ public class SimpleFileRepository implements FileRepository {
      */
     @Override
     public void copyTXTFiles(String from, String to) {
-        return;
+        File regularFile = new File(from);
+        File fileForCopy = new File(to);
+        File copyFileDirectory = new File(fileForCopy.getParent());
+        if (!copyFileDirectory.isDirectory()) {
+            copyFileDirectory.mkdirs();
+        }
+        try {
+            Files.copy(regularFile.toPath(), fileForCopy.toPath());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -44,6 +76,14 @@ public class SimpleFileRepository implements FileRepository {
      */
     @Override
     public boolean createFile(String path, String name) {
+        File fileForCreate = new File(getClass().getResource("/").getPath() + "/" + path);
+        if (!fileForCreate.exists()) fileForCreate.mkdir();
+        File file = new File(fileForCreate + "/" + name);
+        try {
+            return file.createNewFile();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return false;
     }
 
@@ -55,6 +95,12 @@ public class SimpleFileRepository implements FileRepository {
      */
     @Override
     public String readFileFromResources(String fileName) {
-        return null;
+        StringBuilder FileText;
+        try (BufferedReader readFile = new BufferedReader(new FileReader("src/main/resources/" + fileName))) {
+            FileText = new StringBuilder(readFile.readLine());
+        } catch (Exception e) {
+            return e.getMessage();
+        }
+        return FileText.toString();
     }
 }

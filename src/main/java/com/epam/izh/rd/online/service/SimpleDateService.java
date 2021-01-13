@@ -1,8 +1,11 @@
 package com.epam.izh.rd.online.service;
 
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.Year;
 import java.time.format.DateTimeFormatter;
+
 
 public class SimpleDateService implements DateService {
 
@@ -14,7 +17,8 @@ public class SimpleDateService implements DateService {
      */
     @Override
     public String parseDate(LocalDate localDate) {
-        return null;
+        DateTimeFormatter date = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+        return localDate.format(date);
     }
 
     /**
@@ -25,7 +29,8 @@ public class SimpleDateService implements DateService {
      */
     @Override
     public LocalDateTime parseString(String string) {
-        return null;
+        DateTimeFormatter date = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        return LocalDateTime.parse(string, date);
     }
 
     /**
@@ -37,7 +42,7 @@ public class SimpleDateService implements DateService {
      */
     @Override
     public String convertToCustomFormat(LocalDate localDate, DateTimeFormatter formatter) {
-        return null;
+        return localDate.format(formatter);
     }
 
     /**
@@ -47,7 +52,11 @@ public class SimpleDateService implements DateService {
      */
     @Override
     public long getNextLeapYear() {
-        return 0;
+        long LeapYear = LocalDate.now().getYear() + 1;
+        while(!Year.isLeap(LeapYear)){
+            LeapYear++;
+        }
+        return LeapYear;
     }
 
     /**
@@ -57,7 +66,7 @@ public class SimpleDateService implements DateService {
      */
     @Override
     public long getSecondsInYear(int year) {
-        return 0;
+        return 366*60*60*24;
     }
 
 
